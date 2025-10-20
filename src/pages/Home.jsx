@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Sideways from "../components/Sideways.jsx";
 import FiveDays from "../components/FiveDays.jsx";
 import Highlights from "../components/Highlights.jsx";
-import Sideways from "../components/Sideways.jsx";
 export default function Home() {
   const [city, setCity] = useState("Lima");
   return (
