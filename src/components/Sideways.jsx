@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import useData from "../hooks/UseData";
 
-export default function Aside({ city, setCity }) {
+export default function Sideways({ city, setCity }) {
   const api_key = import.meta.env.VITE_WEATHER_API_KEY;
 
   const [searchInput, setSearchInput] = useState("");
