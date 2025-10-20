@@ -4,9 +4,15 @@ import useData from "../hooks/UseData";
 export default function FiveDays({ city }) {
   const [unit, setUnit] = useState("C");
   const api_key = import.meta.env.VITE_WEATHER_API_KEY;
-  const five_days_url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${api_key}&units=metric&lang=en`;
-  const { data, loading, error } = useData(five_days_url);
 
+  let five_days_url = "";
+  if (city.includes(",")) {
+    const [lat, lon] = city.split(",");
+    five_days_url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${api_key}&units=metric&lang=en`;
+  } else {
+    five_days_url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${api_key}&units=metric&lang=en`;
+  }
+  const { data, loading, error } = useData(five_days_url);
   const dailyForecast = useMemo(() => {
     if (!data || !data.list) return [];
 
@@ -37,7 +43,6 @@ export default function FiveDays({ city }) {
     return forecasts;
   }, [data]);
 
-  // 🔄 Conversión de °C → °F
   const convertTemp = (tempC) => {
     return unit === "C" ? Math.round(tempC) : Math.round((tempC * 9) / 5 + 32);
   };
@@ -55,11 +60,10 @@ export default function FiveDays({ city }) {
 
   return (
     <section className="flex flex-col gap-4">
-      {/* Botones °C / °F */}
-      <div className="flex justify-end items-end h-20 w-64 gap-5 md:max-w-2xl md:w-full cursor-pointer">
+      <div className="flex justify-end gap-5 md:max-w-2xl w-full mx-auto">
         <button
           onClick={() => setUnit("C")}
-          className={`w-10 h-10 pr-1 pt-1 text-center text-xl font-bold rounded-full ${
+          className={`w-10 h-10 text-center text-xl font-bold rounded-full ${
             unit === "C" ? "text-[#110E3C] bg-[#E7E7EB]" : "text-[#E7E7EB] bg-[#585676]"
           }`}
         >
@@ -67,29 +71,27 @@ export default function FiveDays({ city }) {
         </button>
         <button
           onClick={() => setUnit("F")}
-          className={`w-10 h-10 pr-1 pt-1 text-center text-xl font-bold rounded-full ${
+          className={`w-10 h-10 text-center text-xl font-bold rounded-full ${
             unit === "F" ? "text-[#110E3C] bg-[#E7E7EB]" : "text-[#E7E7EB] bg-[#585676]"
           }`}
         >
           °F
         </button>
       </div>
-
-      {/* Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+      <ul className="grid grid-cols-2 lg:grid-cols-5 gap-5 w-fit mx-auto md:max-w-2xl">
         {dailyForecast.map((day, i) => (
-          <div key={day.date} className="bg-[#1f203b] flex flex-col items-center p-4 rounded text-white">
-            <p className="mb-2">{i === 0 ? "Tomorrow" : formatDate(day.date)}</p>
-            <img src={`https://openweathermap.org/img/wn/${day.icon}@2x.png`} alt={day.description} className="w-16 my-4" />
+          <li key={day.date} className="bg-[#1f203b] flex flex-col items-center rounded text-white w-[7.5rem] h-40">
+            <p className="mt-4">{i === 0 ? "Tomorrow" : formatDate(day.date)}</p>
+            <img src={`/weather/${day.icon}.png`} alt={day.description} className="w-16 my-2" />
             <p>
-              {convertTemp(day.temp_max)}°{unit}{" "}
+              {convertTemp(day.temp_max)}°{unit} &nbsp;
               <span className="text-gray-400">
                 {convertTemp(day.temp_min)}°{unit}
               </span>
             </p>
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   );
 }

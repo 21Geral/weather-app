@@ -16,7 +16,7 @@ export default function useData(url) {
       try {
         const response = await axios.get(url);
         setData(response.data);
-      } catch (error) {
+      } catch (err) {
         setError(err.response?.data?.message || err.message || "Error al obtener datos");
       } finally {
         setLoading(false);
